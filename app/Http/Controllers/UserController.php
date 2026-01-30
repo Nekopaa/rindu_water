@@ -20,16 +20,20 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-    $request->validate([
-        'nama'  => 'required|string|max:255',
-        'email' => 'required|email|max:255|unique:users',
-        'password' => 'required|string|min:6|confirmed',
-    ]);
-    
+        $request->validate([
+            'nama'  => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        User::create($request->all());
+
+        return redirect()->route('user.index')
+            ->with('success', 'User berhasil ditambahkan');
     }
     
-    App\Model\user::create($request->all());
-    return redirect()->route('user.index')
-    ->with('succes', 'user')
+    // App\Model\user::create($request->all());
+    // return redirect()->route('user.index')
+    // ->with('succes', 'user')
     
 }
