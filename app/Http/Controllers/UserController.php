@@ -26,14 +26,10 @@ class UserController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        User::create($request->all());
-
-        return redirect()->route('user.index')
-            ->with('success', 'User berhasil ditambahkan');
+        \App\Models\User::create($request->all());
+    return redirect()->route('user.index')
+    ->with('succes', 'user');
     }
     
-    // App\Model\user::create($request->all());
-    // return redirect()->route('user.index')
-    // ->with('succes', 'user')
-    
+
 }
