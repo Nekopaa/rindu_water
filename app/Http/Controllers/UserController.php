@@ -9,8 +9,8 @@ class UserController extends Controller
 {
     public function index()
     {
-        $user = \App\Models\user::all();
-        return view('user.index', compact('user'));
+        $User = \App\Models\User::all();
+        return view('user.index', compact('User'));
     }
 
     public function create()
@@ -27,9 +27,27 @@ class UserController extends Controller
         ]);
 
         \App\Models\User::create($request->all());
-    return redirect()->route('user.index')
-    ->with('succes', 'user');
+        return redirect()->route('user.index')
+            ->with('succes', 'user');
     }
-    
 
+    public function edit($id)
+    {
+        $User = \App\Models\User::findOrFail($id);
+        return view('user.edit', compact('User'));
+    }   
+
+    public function update(Request $request, string $id)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users'.$id,
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $User = \App\Models\User::findOrFail($id);
+        $User->update($request->all());
+        return redirect()->route('user.index')
+        ->with('succes', 'user');
+    }
 }
