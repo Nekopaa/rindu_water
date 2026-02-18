@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class PelangganController extends Controller
+class pelangganController extends Controller
 {
     // Controller stub for Pelanggan
 }

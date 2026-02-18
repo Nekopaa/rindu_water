@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class RiwayatStockController extends Controller
+class riwayatStockController extends Controller
 {
     // Controller stub for RiwayatStock
 }

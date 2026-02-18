@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
+use App\Models\user;
 
-class UserController extends Controller
+class userController extends Controller
 {
     public function index()
     {
-        $User = \App\Models\User::all();
-        return view('user.index', compact('User'));
+        $user = \App\Models\user::all();
+        return view('user.index', compact('user'));
     }
 
     public function create()
@@ -26,15 +26,15 @@ class UserController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        \App\Models\User::create($request->all());
+        \App\Models\user::create($request->all());
         return redirect()->route('user.index')
             ->with('succes', 'user');
     }
 
     public function edit($id)
     {
-        $User = \App\Models\User::findOrFail($id);
-        return view('user.edit', compact('User'));
+        $user = \App\Models\user::findOrFail($id);
+        return view('user.edit', compact('user'));
     }   
 
     public function update(Request $request, string $id)
@@ -45,9 +45,18 @@ class UserController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        $User = \App\Models\User::findOrFail($id);
-        $User->update($request->all());
+        $user = \App\Models\user::findOrFail($id);
+        $user->update($request->all());
         return redirect()->route('user.index')
         ->with('succes', 'user');
     }
+
+    public function destroy (string $id)
+    {
+        $user=\App\Models\user::findOrFail($id)
+        $user=>delete();
+        
+    }
 }
+
+
