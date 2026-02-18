@@ -57,3 +57,17 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+UserController: Manage system users (Admin/Staff).
+ProdukAirController: Manage water products and stock.
+PelangganController: Manage customer database.
+TransaksiController: Manage sales and orders.
+AdminController: Generic admin management.
+DetailPesananController: Manage line items for orders.
+GudangController: Manage warehouse/inventory locations.
+KurirController: Manage delivery personnel.
+LanggananController: Manage subscription plans/customers.
+LaporanPenjualanController: View and manage sales reports.
+PengirimanController: Manage delivery status and tracking.
+RiwayatStockController: Track stock movements (In/Out).
