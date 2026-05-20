@@ -1,4 +1,13 @@
 <x-app-layout>
+    <style>
+        .neo-brutal-input-error {
+            border-color: #f43f5e !important;
+            box-shadow: 4px 4px 0px #f43f5e !important;
+        }
+        .neo-brutal-input-error:focus, .neo-brutal-input-error:hover {
+            box-shadow: 5px 5px 0px #f43f5e !important;
+        }
+    </style>
     <x-slot name="header">
         <h2 class="font-extrabold text-3xl text-black leading-tight">
             {{ __('Dashboard Pelanggan') }}
@@ -130,7 +139,7 @@
                     <div class="h-0.5 bg-black rounded-full"></div>
 
                     <!-- Order Form -->
-                    <form action="{{ route('orders.store') }}" method="POST" class="space-y-6">
+                    <form id="order-form" action="{{ route('orders.store') }}" method="POST" class="space-y-6" novalidate>
                         @csrf
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -611,7 +620,145 @@
                         dropdown.querySelector('.chevron-icon').classList.remove('rotate-180');
                     });
                 });
+
+                // Clear dropdown validation errors on change
+                if (nativeSelect) {
+                    nativeSelect.addEventListener('change', function() {
+                        triggerBtn.classList.remove('neo-brutal-input-error');
+                        const errMsg = dropdown.querySelector('.error-msg');
+                        if (errMsg) errMsg.remove();
+                    });
+                }
             });
+
+            // Premium Form Validation on Submit
+            const orderForm = document.getElementById('order-form');
+            if (orderForm) {
+                orderForm.addEventListener('submit', function(e) {
+                    // Clear previous errors
+                    document.querySelectorAll('.neo-brutal-input-error').forEach(el => {
+                        el.classList.remove('neo-brutal-input-error');
+                    });
+                    document.querySelectorAll('.error-msg').forEach(el => {
+                        el.remove();
+                    });
+                    
+                    const errors = [];
+                    let firstInvalidEl = null;
+
+                    // 1. Validate Product Varian
+                    const idProduk = document.getElementById('id_produk');
+                    const dropdownProduk = document.getElementById('dropdown-id_produk');
+                    if (idProduk && idProduk.value === "") {
+                        const triggerBtn = dropdownProduk.querySelector('.trigger-btn');
+                        triggerBtn.classList.add('neo-brutal-input-error');
+                        
+                        const errMsg = document.createElement('p');
+                        errMsg.className = 'error-msg text-xs font-black text-[#f43f5e] mt-1';
+                        errMsg.textContent = 'Silakan pilih varian air mineral terlebih dahulu!';
+                        dropdownProduk.appendChild(errMsg);
+                        
+                        errors.push({ element: triggerBtn, name: 'Varian Air Mineral' });
+                        if (!firstInvalidEl) firstInvalidEl = triggerBtn;
+                    }
+
+                    // 2. Validate Qty (jumlah)
+                    const jumlah = document.getElementById('jumlah');
+                    if (jumlah) {
+                        const qtyVal = parseInt(jumlah.value);
+                        if (isNaN(qtyVal) || qtyVal < 1) {
+                            jumlah.classList.add('neo-brutal-input-error');
+                            
+                            const errMsg = document.createElement('p');
+                            errMsg.className = 'error-msg text-xs font-black text-[#f43f5e] mt-1';
+                            errMsg.textContent = 'Jumlah unit wajib diisi dan minimal 1!';
+                            jumlah.parentNode.appendChild(errMsg);
+                            
+                            errors.push({ element: jumlah, name: 'Jumlah Unit' });
+                            if (!firstInvalidEl) firstInvalidEl = jumlah;
+                        }
+                    }
+
+                    // 3. Validate Metode Pembayaran
+                    const metodePembayaran = document.getElementById('metode_pembayaran');
+                    const dropdownMetode = document.getElementById('dropdown-metode_pembayaran');
+                    if (metodePembayaran && metodePembayaran.value === "") {
+                        const triggerBtn = dropdownMetode.querySelector('.trigger-btn');
+                        triggerBtn.classList.add('neo-brutal-input-error');
+                        
+                        const errMsg = document.createElement('p');
+                        errMsg.className = 'error-msg text-xs font-black text-[#f43f5e] mt-1';
+                        errMsg.textContent = 'Silakan pilih metode pembayaran!';
+                        dropdownMetode.appendChild(errMsg);
+                        
+                        errors.push({ element: triggerBtn, name: 'Metode Pembayaran' });
+                        if (!firstInvalidEl) firstInvalidEl = triggerBtn;
+                    }
+
+                    // 4. Validate Nomor Telepon
+                    const noTelepon = document.getElementById('no_telepon');
+                    if (noTelepon && noTelepon.value.trim() === "") {
+                        noTelepon.classList.add('neo-brutal-input-error');
+                        
+                        const errMsg = document.createElement('p');
+                        errMsg.className = 'error-msg text-xs font-black text-[#f43f5e] mt-1';
+                        errMsg.textContent = 'Nomor telepon / WhatsApp wajib diisi!';
+                        noTelepon.parentNode.appendChild(errMsg);
+                        
+                        errors.push({ element: noTelepon, name: 'Nomor Telepon' });
+                        if (!firstInvalidEl) firstInvalidEl = noTelepon;
+                    }
+
+                    // 5. Validate Alamat Lengkap Pengiriman
+                    const alamat = document.getElementById('alamat');
+                    if (alamat && alamat.value.trim() === "") {
+                        alamat.classList.add('neo-brutal-input-error');
+                        
+                        const errMsg = document.createElement('p');
+                        errMsg.className = 'error-msg text-xs font-black text-[#f43f5e] mt-1';
+                        errMsg.textContent = 'Alamat lengkap pengiriman wajib diisi!';
+                        alamat.parentNode.appendChild(errMsg);
+                        
+                        errors.push({ element: alamat, name: 'Alamat Pengiriman' });
+                        if (!firstInvalidEl) firstInvalidEl = alamat;
+                    }
+
+                    // If there are errors, stop form submission and focus/scroll
+                    if (errors.length > 0) {
+                        e.preventDefault();
+                        
+                        // Scroll to the first invalid element container smoothly and center it
+                        if (firstInvalidEl) {
+                            firstInvalidEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            
+                            // Focus after scrolling completes (approx 300ms)
+                            setTimeout(() => {
+                                firstInvalidEl.focus();
+                            }, 300);
+                        }
+                    }
+                });
+
+                // Real-time error removal when user starts typing/editing
+                const inputsToWatch = [
+                    { id: 'jumlah', type: 'input' },
+                    { id: 'no_telepon', type: 'input' },
+                    { id: 'alamat', type: 'input' }
+                ];
+                
+                inputsToWatch.forEach(item => {
+                    const el = document.getElementById(item.id);
+                    if (el) {
+                        el.addEventListener(item.type, function() {
+                            if (this.value.trim() !== "") {
+                                this.classList.remove('neo-brutal-input-error');
+                                const errMsg = this.parentNode.querySelector('.error-msg');
+                                if (errMsg) errMsg.remove();
+                            }
+                        });
+                    }
+                });
+            }
         });
     </script>
 </x-app-layout>
