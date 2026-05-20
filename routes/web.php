@@ -1,46 +1,44 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-// --- Import semua Controller ---
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProdukAirController;
 use App\Http\Controllers\PelangganController;
-use App\Http\Controllers\GudangController;
-use App\Http\Controllers\KurirController;
-use App\Http\Controllers\LanggananController;
-use App\Http\Controllers\TransaksiController;
-use App\Http\Controllers\PengirimanController;
-use App\Http\Controllers\RiwayatStockController;
-use App\Http\Controllers\LaporanPenjualanController;
-use App\Http\Controllers\DetailPesananController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\WelcomeController;
+use Illuminate\Support\Facades\Route;
 
-// --- Halaman Utama ---
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', [WelcomeController::class, 'index']);
+
+
+
+Route::get('/dashboard', function () {
+    $availableProperties = \App\Models\ProdukAir::where('status', 'available')->get();
+    $myApplications = \App\Models\Pelanggan::with('property')
+        ->where('user_id', auth()->id())
+        ->orderBy('created_at', 'desc')
+        ->get();
+    return view('dashboard', compact('availableProperties', 'myApplications'));
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+use App\Http\Controllers\RentalApplicationController;
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+   
+    // User Rental Application Route
+    Route::post('/applications', [RentalApplicationController::class, 'store'])->name('applications.store');
 });
 
-// --- CRUD Lengkap (7 route otomatis) ---
-Route::resource('user', UserController::class);
-Route::resource('admin', AdminController::class);
-Route::resource('produk-air', ProdukAirController::class);
-Route::resource('pelanggan', PelangganController::class);
-Route::resource('gudang', GudangController::class);
-Route::resource('kurir', KurirController::class);
-Route::resource('langganan', LanggananController::class);
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::resource('users', UserController::class);
+    Route::resource('properties',ProdukAirController::class);
+    Route::resource('tenants', PelangganController::class);
+   
+    // Admin Rental Application Routes
+    Route::get('/applications', [RentalApplicationController::class, 'adminIndex'])->name('admin.applications.index');
+    Route::patch('/applications/{application}', [RentalApplicationController::class, 'adminUpdate'])->name('admin.applications.update');
+});
 
-// --- Parsial: hanya aksi tertentu ---
-// Transaksi: hanya bisa dibaca dan diupdate statusnya
-Route::resource('transaksi', TransaksiController::class)->only(['index', 'show', 'update']);
-
-// Pengiriman: hanya bisa dilihat dan diupdate statusnya
-Route::resource('pengiriman', PengirimanController::class)->only(['index', 'show', 'update']);
-
-// --- Read-Only: hanya bisa dilihat ---
-// Laporan dan Riwayat Stock tidak boleh diubah manual
-Route::resource('laporan-penjualan', LaporanPenjualanController::class)->only(['index', 'show']);
-Route::resource('riwayat-stock', RiwayatStockController::class)->only(['index', 'show']);
-
-// Detail Pesanan: dikelola otomatis lewat Transaksi
-Route::resource('detail-pesanan', DetailPesananController::class)->only(['index', 'show']);
+require __DIR__.'/auth.php';
