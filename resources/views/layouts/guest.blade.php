@@ -10,59 +10,58 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <!-- Neomorphism Styles -->
+        <!-- Neo-brutalism Styles -->
         <style>
             :root {
-                --neo-bg: #e0e5ec;
-                --neo-shadow-dark: #a3b1c6;
-                --neo-shadow-light: #ffffff;
-                --neo-text: #2d3748;
+                --neo-bg: #F4F2EC;
+                --neo-yellow: #facc15;
+                --neo-border-color: #000000;
             }
 
             * { font-family: 'Plus Jakarta Sans', sans-serif; }
 
             body {
                 background-color: var(--neo-bg);
-                color: var(--neo-text);
+                color: #000000;
             }
 
             .neo-container {
-                background-color: var(--neo-bg);
-                border-radius: 28px;
-                box-shadow: 12px 12px 24px var(--neo-shadow-dark),
-                            -12px -12px 24px var(--neo-shadow-light);
+                background-color: #ffffff;
+                border: 4px solid var(--neo-border-color);
+                border-radius: 16px;
+                box-shadow: 8px 8px 0px var(--neo-border-color);
             }
 
             .neo-logo-wrapper {
-                width: 80px;
-                height: 80px;
+                width: 76px;
+                height: 76px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 border-radius: 50%;
-                background-color: var(--neo-bg);
-                box-shadow: 6px 6px 12px var(--neo-shadow-dark),
-                            -6px -6px 12px var(--neo-shadow-light);
-                transition: all 0.3s ease;
+                background-color: var(--neo-yellow);
+                border: 3px solid var(--neo-border-color);
+                box-shadow: 4px 4px 0px var(--neo-border-color);
+                transition: all 0.2s ease;
             }
 
             .neo-logo-wrapper:hover {
-                box-shadow: inset 4px 4px 8px var(--neo-shadow-dark),
-                            inset -4px -4px 8px var(--neo-shadow-light);
+                transform: translate(-2px, -2px);
+                box-shadow: 6px 6px 0px var(--neo-border-color);
             }
         </style>
     </head>
     <body class="antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-[#e0e5ec]">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-[#F4F2EC]">
             <div class="mb-8">
                 <a href="/" class="block">
                     <div class="neo-logo-wrapper">
-                        <x-application-logo class="w-12 h-12 text-blue-600" />
+                        <x-application-logo class="w-10 h-10 text-black" />
                     </div>
                 </a>
             </div>

@@ -9,7 +9,12 @@ class Transaksi extends Model
 {
     use HasFactory;
 
+    protected $table = 'transaksi';
+    protected $primaryKey = 'id_transaksi';
+
     protected $fillable = [
+        'id_pelanggan',
+        'id_langganan',
         'tanggal_transaksi',
         'metode_pembayaran',
         'total_bayar',
@@ -17,4 +22,14 @@ class Transaksi extends Model
         'kode_invoice',
         'catatan',
     ];
+
+    public function detailPesanan()
+    {
+        return $this->hasOne(DetailPesanan::class, 'id_transaksi', 'id_transaksi');
+    }
+    
+    public function pelanggan()
+    {
+        return $this->belongsTo(Pelanggan::class, 'id_pelanggan', 'id_pelanggan');
+    }
 }

@@ -9,9 +9,18 @@ class Pelanggan extends Model
 {
     use HasFactory;
 
+    protected $table = 'pelanggan';
+    protected $primaryKey = 'id_pelanggan';
+
     protected $fillable = [
-        'nama',
+        'jenis_pelanggan',
+        'nama_pelanggan',
+        'nama_lembaga',
+        'penanggung_jawab',
         'alamat',
-        'no_hp',
+        'no_telepon',
+        'email',
+        'tanggal_daftar',
+        'status_pelanggan',
     ];
 }
