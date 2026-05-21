@@ -81,12 +81,15 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::resource('users', UserController::class);
-    Route::resource('properties',ProdukAirController::class);
-    Route::resource('tenants', PelangganController::class);
-   
-    // Admin Rental Application Routes
-    Route::get('/applications', [RentalApplicationController::class, 'adminIndex'])->name('admin.applications.index');
-    Route::patch('/applications/{application}', [RentalApplicationController::class, 'adminUpdate'])->name('admin.applications.update');
+    Route::resource('produk-air', ProdukAirController::class);
+    Route::resource('pelanggan', PelangganController::class);
+    Route::resource('transaksi', TransaksiController::class)->only(['index', 'show', 'update']);
+    Route::resource('langganan', LanggananController::class);
+    Route::resource('kurir', KurirController::class);
+    Route::resource('pengiriman', PengirimanController::class)->only(['index', 'show', 'update']);
+    Route::resource('gudang', GudangController::class);
+    Route::resource('riwayat-stock', RiwayatStockController::class)->only(['index', 'show']);
+    Route::resource('laporan-penjualan', LaporanPenjualanController::class)->only(['index', 'show']);
 });
 
 require __DIR__.'/auth.php';

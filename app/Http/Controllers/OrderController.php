@@ -26,6 +26,7 @@ class OrderController extends Controller
             'alamat' => 'required|string',
             'catatan' => 'nullable|string',
             'berlangganan' => 'nullable|in:sekali,harian,mingguan,bulanan',
+            'tanggal_mulai' => 'nullable|date',
         ]);
 
         try {
@@ -87,12 +88,23 @@ class OrderController extends Controller
 
             // Handle optional Langganan (Subscription)
             if ($request->has('berlangganan') && in_array($request->berlangganan, ['harian', 'mingguan', 'bulanan'])) {
+                $tanggalMulai = $request->input('tanggal_mulai') ? \Carbon\Carbon::parse($request->input('tanggal_mulai')) : now();
+                
+                // Calculate ending date based on subscription cycle
+                if ($request->berlangganan === 'mingguan') {
+                    $tanggalBerakhir = $tanggalMulai->copy()->addDays(7);
+                } elseif ($request->berlangganan === 'bulanan') {
+                    $tanggalBerakhir = $tanggalMulai->copy()->addMonth();
+                } else { // harian
+                    $tanggalBerakhir = $tanggalMulai->copy()->addMonth();
+                }
+
                 $langganan = Langganan::create([
                     'id_pelanggan' => $pelanggan->id_pelanggan,
                     'id_produk' => $produk->id_produk,
                     'periode_pengantaran' => $request->berlangganan,
-                    'tanggal_mulai' => now(),
-                    'tanggal_berakhir' => now()->addMonths(1),
+                    'tanggal_mulai' => $tanggalMulai,
+                    'tanggal_berakhir' => $tanggalBerakhir,
                     'jumlah_pesanan' => $request->jumlah,
                     'status_langganan' => 'aktif',
                 ]);

@@ -9,10 +9,19 @@ class RiwayatStock extends Model
 {
     use HasFactory;
 
+    protected $table = 'riwayat_stock';
+    protected $primaryKey = 'id_riwayat';
+
     protected $fillable = [
+        'id_produk',
         'jenis_perubahan',
         'jumlah',
         'tanggal_perubahan',
         'keterangan',
     ];
+
+    public function produk()
+    {
+        return $this->belongsTo(ProdukAir::class, 'id_produk', 'id_produk');
+    }
 }

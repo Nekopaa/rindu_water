@@ -273,6 +273,27 @@
                             </div>
                         </div>
 
+                        <!-- Subscription Start Date Picker (Conditionally Visible) -->
+                        <div id="tanggal-mulai-container" class="hidden p-6 bg-[#facc15]/10 border-3 border-black rounded-xl shadow-[4px_4px_0px_#000000] space-y-4 my-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                                <div>
+                                    <label for="tanggal_mulai" class="block text-sm font-extrabold text-black mb-2">Tanggal Mulai Berlangganan</label>
+                                    <input type="date" name="tanggal_mulai" id="tanggal_mulai" class="neo-brutal-input w-full" onchange="calculateSubscriptionEndDate()">
+                                </div>
+                                <div>
+                                    <div class="p-4 bg-[#facc15] border-3 border-black rounded-xl shadow-[3px_3px_0px_#000000] text-black">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-lg">📅</span>
+                                            <span class="text-xs font-black uppercase tracking-wider">Durasi Langganan</span>
+                                        </div>
+                                        <p class="text-sm font-black text-black mt-1 leading-relaxed" id="subscription-duration-text">
+                                            Mulai tanggal - akan berakhir di tanggal -
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Phone number -->
                             <div>
@@ -482,6 +503,63 @@
 
     <!-- Live calculations Javascript -->
     <script>
+        // Format date into Indonesian locale string safely in local timezone
+        function formatDateIndonesian(dateString) {
+            if (!dateString) return '-';
+            const parts = dateString.split('-');
+            if (parts.length !== 3) return '-';
+            const day = parseInt(parts[2], 10);
+            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            const month = months[parseInt(parts[1], 10) - 1];
+            const year = parts[0];
+            return `${day} ${month} ${year}`;
+        }
+
+        // Calculate and display subscription end date
+        function calculateSubscriptionEndDate() {
+            const dateInput = document.getElementById('tanggal_mulai');
+            const berlanggananSelect = document.getElementById('berlangganan');
+            const durationText = document.getElementById('subscription-duration-text');
+            
+            if (!dateInput || !berlanggananSelect || !durationText) return;
+            
+            const startVal = dateInput.value;
+            const cycle = berlanggananSelect.value;
+            
+            if (!startVal || cycle === 'sekali') {
+                durationText.innerHTML = 'Mulai tanggal - akan berakhir di tanggal -';
+                return;
+            }
+            
+            // Create a Date object in the local timezone using YYYY, MM-1, DD parts
+            const parts = startVal.split('-');
+            const startDate = new Date(parts[0], parts[1] - 1, parts[2]);
+            const endDate = new Date(startDate);
+            
+            let cycleText = '';
+            if (cycle === 'mingguan') {
+                endDate.setDate(startDate.getDate() + 7);
+                cycleText = 'Siklus Mingguan';
+            } else if (cycle === 'bulanan') {
+                endDate.setMonth(startDate.getMonth() + 1);
+                cycleText = 'Siklus Bulanan';
+            } else if (cycle === 'harian') {
+                endDate.setMonth(startDate.getMonth() + 1); // 1 month duration
+                cycleText = 'Siklus Harian';
+            }
+            
+            // Format end date string as YYYY-MM-DD for formatting
+            const endYear = endDate.getFullYear();
+            const endMonth = String(endDate.getMonth() + 1).padStart(2, '0');
+            const endDay = String(endDate.getDate()).padStart(2, '0');
+            const endVal = `${endYear}-${endMonth}-${endDay}`;
+            
+            const formattedStart = formatDateIndonesian(startVal);
+            const formattedEnd = formatDateIndonesian(endVal);
+            
+            durationText.innerHTML = `Mulai tanggal <strong class="underline">${formattedStart}</strong> akan berakhir di tanggal <strong class="underline">${formattedEnd}</strong> (${cycleText}).`;
+        }
+
         // Toggle custom dropdown visibility
         function toggleCustomDropdown(dropdownId) {
             // Close all other dropdowns first
@@ -631,6 +709,38 @@
                 }
             });
 
+            // Toggle tanggal_mulai date field dynamically based on berlangganan selection
+            const berlanggananSelect = document.getElementById('berlangganan');
+            const dateContainer = document.getElementById('tanggal-mulai-container');
+            const dateInput = document.getElementById('tanggal_mulai');
+            
+            if (berlanggananSelect && dateContainer && dateInput) {
+                berlanggananSelect.addEventListener('change', function() {
+                    const val = this.value;
+                    if (val === 'harian' || val === 'mingguan' || val === 'bulanan') {
+                        dateContainer.classList.remove('hidden');
+                        dateInput.required = true;
+                        
+                        // Set default date to today if empty
+                        if (!dateInput.value) {
+                            const today = new Date();
+                            const yyyy = today.getFullYear();
+                            const mm = String(today.getMonth() + 1).padStart(2, '0');
+                            const dd = String(today.getDate()).padStart(2, '0');
+                            dateInput.value = `${yyyy}-${mm}-${dd}`;
+                            dateInput.min = `${yyyy}-${mm}-${dd}`;
+                        }
+                        
+                        calculateSubscriptionEndDate();
+                    } else {
+                        dateContainer.classList.add('hidden');
+                        dateInput.required = false;
+                        dateInput.value = '';
+                        calculateSubscriptionEndDate();
+                    }
+                });
+            }
+
             // Premium Form Validation on Submit
             const orderForm = document.getElementById('order-form');
             if (orderForm) {
@@ -695,6 +805,21 @@
                         if (!firstInvalidEl) firstInvalidEl = triggerBtn;
                     }
 
+                    // 3b. Validate Tanggal Mulai (if subscription is selected)
+                    if (berlanggananSelect && ['harian', 'mingguan', 'bulanan'].includes(berlanggananSelect.value)) {
+                        if (dateInput && dateInput.value === "") {
+                            dateInput.classList.add('neo-brutal-input-error');
+                            
+                            const errMsg = document.createElement('p');
+                            errMsg.className = 'error-msg text-xs font-black text-[#f43f5e] mt-1';
+                            errMsg.textContent = 'Tanggal mulai berlangganan wajib diisi!';
+                            dateInput.parentNode.appendChild(errMsg);
+                            
+                            errors.push({ element: dateInput, name: 'Tanggal Mulai Langganan' });
+                            if (!firstInvalidEl) firstInvalidEl = dateInput;
+                        }
+                    }
+
                     // 4. Validate Nomor Telepon
                     const noTelepon = document.getElementById('no_telepon');
                     if (noTelepon && noTelepon.value.trim() === "") {
@@ -743,7 +868,8 @@
                 const inputsToWatch = [
                     { id: 'jumlah', type: 'input' },
                     { id: 'no_telepon', type: 'input' },
-                    { id: 'alamat', type: 'input' }
+                    { id: 'alamat', type: 'input' },
+                    { id: 'tanggal_mulai', type: 'change' }
                 ];
                 
                 inputsToWatch.forEach(item => {
