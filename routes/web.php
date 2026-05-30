@@ -5,6 +5,14 @@ use App\Http\Controllers\ProdukAirController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\LanggananController;
+use App\Http\Controllers\KurirController;
+use App\Http\Controllers\PengirimanController;
+use App\Http\Controllers\GudangController;
+use App\Http\Controllers\RiwayatStockController;
+use App\Http\Controllers\LaporanPenjualanController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WelcomeController::class, 'index']);
@@ -14,6 +22,10 @@ Route::get('/', [WelcomeController::class, 'index']);
 use App\Http\Controllers\OrderController;
 
 Route::get('/dashboard', function () {
+    if (auth()->user()->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+
     try {
         if (\App\Models\ProdukAir::count() === 0) {
             \App\Models\ProdukAir::create([
@@ -80,6 +92,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::resource('users', UserController::class);
     Route::resource('produk-air', ProdukAirController::class);
     Route::resource('pelanggan', PelangganController::class);

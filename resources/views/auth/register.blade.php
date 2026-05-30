@@ -26,6 +26,31 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+        <!-- Role Selection (Admin / Pelanggan) -->
+        <div class="mt-4">
+            <x-input-label for="role" :value="__('Daftar sebagai')" />
+            <div class="mt-2 flex flex-col gap-2">
+                <label class="inline-flex items-center gap-3">
+                    <input type="radio" name="role" value="user" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" {{ old('role', 'user') === 'user' ? 'checked' : '' }}>
+                    <span class="text-sm text-gray-700 font-bold">Pelanggan</span>
+                </label>
+
+                <label class="inline-flex items-center gap-3">
+                    <input type="radio" name="role" value="admin" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" {{ old('role') === 'admin' ? 'checked' : '' }}>
+                    <span class="text-sm text-gray-700 font-bold">Admin</span>
+                </label>
+            </div>
+            <x-input-error :messages="$errors->get('role')" class="mt-2" />
+        </div>
+
+        <!-- Company Code (only for Admin) -->
+        <div class="mt-4" id="company_code_container" style="display: {{ old('role') === 'admin' ? 'block' : 'none' }};">
+            <x-input-label for="company_code" :value="__('Kode Perusahaan (Admin)')" />
+            <x-text-input id="company_code" class="block mt-1 w-full" type="text" name="company_code" value="{{ old('company_code') }}" autocomplete="off" />
+            <div class="text-xs font-bold text-gray-600 mt-2">Kode: <span class="font-black">PRIMA</span></div>
+            <x-input-error :messages="$errors->get('company_code')" class="mt-2" />
+        </div>
+
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
@@ -77,6 +102,23 @@
     </form>
 
     <script>
+        function toggleCompanyCodeField() {
+            const selectedRole = document.querySelector('input[name="role"]:checked')?.value;
+            const container = document.getElementById('company_code_container');
+            if (!container) return;
+            if (selectedRole === 'admin') {
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const roleRadios = document.querySelectorAll('input[name="role"]');
+            roleRadios.forEach(r => r.addEventListener('change', toggleCompanyCodeField));
+            toggleCompanyCodeField();
+        });
+
         function togglePasswordVisibility(fieldId, button) {
             const input = document.getElementById(fieldId);
             const icon = button.querySelector('svg');
