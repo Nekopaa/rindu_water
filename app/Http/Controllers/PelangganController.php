@@ -21,9 +21,15 @@ class PelangganController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'alamat' => 'required|string',
-            'no_hp' => 'required|string|max:20',
+            'jenis_pelanggan'  => 'required|in:individu,lembaga',
+            'nama_pelanggan'   => 'required|string|max:255|unique:pelanggan,nama_pelanggan',
+            'nama_lembaga'     => 'nullable|string|max:255',
+            'penanggung_jawab' => 'required|string|max:255',
+            'alamat'           => 'nullable|string',
+            'no_telepon'       => 'required|string|max:20',
+            'email'            => 'nullable|email|max:255',
+            'tanggal_daftar'   => 'nullable|date',
+            'status_pelanggan' => 'required|in:aktif,tidak aktif',
         ]);
 
         Pelanggan::create($validated);
@@ -46,9 +52,15 @@ class PelangganController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'alamat' => 'required|string',
-            'no_hp' => 'required|string|max:20',
+            'jenis_pelanggan'  => 'required|in:individu,lembaga',
+            'nama_pelanggan'   => 'required|string|max:255|unique:pelanggan,nama_pelanggan,' . $id . ',id_pelanggan',
+            'nama_lembaga'     => 'nullable|string|max:255',
+            'penanggung_jawab' => 'required|string|max:255',
+            'alamat'           => 'nullable|string',
+            'no_telepon'       => 'required|string|max:20',
+            'email'            => 'nullable|email|max:255',
+            'tanggal_daftar'   => 'nullable|date',
+            'status_pelanggan' => 'required|in:aktif,tidak aktif',
         ]);
 
         $pelanggan = Pelanggan::findOrFail($id);

@@ -36,8 +36,17 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+<<<<<<< HEAD
             'role' => ['required', 'in:user,admin'],
             'company_code' => ['nullable', 'string', 'required_if:role,admin'],
+=======
+
+            // role selection: admin atau pelanggan
+            'role' => ['required', 'in:admin,user'],
+
+            // kode perusahaan hanya wajib jika daftar sebagai admin
+            'company_code' => ['required_if:role,admin', 'nullable', 'string', 'in:PRIMA'],
+>>>>>>> a8c8fecf5ded5d51f8778897db1b0b3bf4da798e
         ]);
 
         if ($request->role === 'admin' && $request->company_code !== self::ADMIN_SECRET_CODE) {
@@ -52,6 +61,10 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
+
+        // Jika admin, kode perusahaan sudah tervalidasi dengan rules (harus PRIMA)
+        // Tidak ada penyimpanan kode perusahaan di tabel users.
+
 
         event(new Registered($user));
 

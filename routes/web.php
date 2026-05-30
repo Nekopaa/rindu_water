@@ -5,51 +5,38 @@ use App\Http\Controllers\ProdukAirController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
-use App\Http\Controllers\AdminDashboardController;
-use App\Http\Controllers\PelangganDashboardController;
-use App\Http\Controllers\LanggananController;
-use App\Http\Controllers\LaporanPenjualanController;
-use App\Http\Controllers\RentalApplicationController;
-use App\Http\Controllers\TransaksiController;
-use App\Http\Controllers\PengirimanController;
-use App\Http\Controllers\KurirController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WelcomeController::class, 'index']);
 
+
+
 Route::get('/dashboard', function () {
-    return redirect()->route('dashboard.redirect');
+    $availableProperties = \App\Models\ProdukAir::where('status', 'available')->get();
+    $myApplications = \App\Models\Pelanggan::with('property')
+        ->where('user_id', auth()->id())
+        ->orderBy('created_at', 'desc')
+        ->get();
+    return view('dashboard', compact('availableProperties', 'myApplications'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/dashboard-redirect', function () {
-    $user = auth()->user();
-    if ($user->role === 'admin') {
-        return redirect()->route('admin.dashboard');
-    }
-    return redirect()->route('pelanggan.dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard.redirect');
+use App\Http\Controllers\RentalApplicationController;
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+   
+    // User Rental Application Route
+    Route::post('/applications', [RentalApplicationController::class, 'store'])->name('applications.store');
+});
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::resource('users', UserController::class);
-    Route::resource('properties', ProdukAirController::class);
+    Route::resource('properties',ProdukAirController::class);
     Route::resource('tenants', PelangganController::class);
-    Route::resource('langganan', LanggananController::class)->names([
-        'index' => 'admin.langganan.index',
-        'create' => 'admin.langganan.create',
-        'store' => 'admin.langganan.store',
-        'show' => 'admin.langganan.show',
-        'edit' => 'admin.langganan.edit',
-        'update' => 'admin.langganan.update',
-        'destroy' => 'admin.langganan.destroy',
-    ]);
-    Route::get('/laporan-penjualan', [LaporanPenjualanController::class, 'index'])->name('admin.laporan-penjualan');
-    Route::resource('pengiriman', PengirimanController::class)->names([
-        'index' => 'admin.pengiriman.index',
-    ])->only(['index', 'show']);
-    Route::resource('kurir', KurirController::class)->names([
-        'index' => 'admin.kurir.index',
-    ])->only(['index', 'show']);
-    
+   
     // Admin Rental Application Routes
     Route::get('/applications', [RentalApplicationController::class, 'adminIndex'])->name('admin.applications.index');
     Route::patch('/applications/{application}', [RentalApplicationController::class, 'adminUpdate'])->name('admin.applications.update');

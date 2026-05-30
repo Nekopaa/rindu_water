@@ -22,7 +22,7 @@ class TransaksiController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'status_pembayaran' => 'required|string',
+            'status_transaksi' => 'required|in:menunggu,dibayar,dikirim,selesai,dibatalkan',
         ]);
 
         $transaksi = Transaksi::findOrFail($id);

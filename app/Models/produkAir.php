@@ -9,6 +9,9 @@ class ProdukAir extends Model
 {
     use HasFactory;
 
+    protected $table = 'produk_air';
+    protected $primaryKey = 'id_produk';
+
     protected $fillable = [
         'nama_produk',
         'jenis_kemasan',
