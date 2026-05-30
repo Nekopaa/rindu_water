@@ -23,8 +23,11 @@
                 --neo-blue: #2563eb;
                 --neo-cyan: #06b6d4;
                 --neo-red: #f43f5e;
-                --neo-border-color: #000000;
+                --neo-border-color: rgba(0,0,0,0.18);
                 --neo-text: #000000;
+                --neo-shadow-dark: rgba(0,0,0,0.18);
+                --neo-shadow-light: rgba(255,255,255,0.9);
+                --neo-radius: 16px;
             }
 
             * { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -34,27 +37,32 @@
                 color: var(--neo-text);
             }
 
-            /* Neo-brutalist Card */
+            /* Neomorphism primitives (map old neo-brutal classes) */
             .neo-brutal-card {
                 background: #ffffff;
-                border: 3px solid var(--neo-border-color);
-                box-shadow: 5px 5px 0px var(--neo-border-color);
-                border-radius: 12px;
-                transition: all 0.2s ease;
+                border: 1px solid var(--neo-border-color);
+                border-radius: var(--neo-radius);
+                box-shadow:
+                    10px 10px 24px var(--neo-shadow-dark),
+                    -10px -10px 24px var(--neo-shadow-light);
+                transition: transform 0.15s ease, box-shadow 0.15s ease;
             }
 
             .neo-brutal-card:hover {
-                transform: translate(-2px, -2px);
-                box-shadow: 7px 7px 0px var(--neo-border-color);
+                transform: translateY(-2px);
+                box-shadow:
+                    12px 12px 28px var(--neo-shadow-dark),
+                    -12px -12px 28px var(--neo-shadow-light);
             }
 
-            /* Neo-brutalist Button */
             .neo-brutal-btn {
-                background: var(--neo-yellow);
-                color: #000000;
-                border: 3px solid var(--neo-border-color);
-                box-shadow: 4px 4px 0px var(--neo-border-color);
-                border-radius: 10px;
+                background: #f3f3f3;
+                border: 1px solid rgba(0,0,0,0.12);
+                border-radius: 14px;
+                box-shadow:
+                    6px 6px 14px rgba(0,0,0,0.16),
+                    -6px -6px 14px rgba(255,255,255,0.85);
+                color: #000;
                 font-weight: 800;
                 cursor: pointer;
                 transition: all 0.15s ease;
@@ -64,53 +72,62 @@
             }
 
             .neo-brutal-btn:hover {
-                transform: translate(-2px, -2px);
-                box-shadow: 6px 6px 0px var(--neo-border-color);
+                box-shadow:
+                    8px 8px 18px rgba(0,0,0,0.18),
+                    -8px -8px 18px rgba(255,255,255,0.9);
             }
 
             .neo-brutal-btn:active {
-                transform: translate(2px, 2px);
-                box-shadow: 2px 2px 0px var(--neo-border-color);
+                box-shadow:
+                    inset 6px 6px 14px rgba(0,0,0,0.16),
+                    inset -6px -6px 14px rgba(255,255,255,0.85);
             }
 
             .neo-brutal-btn-blue {
                 background: var(--neo-blue);
                 color: #ffffff;
+                border-color: rgba(0,0,0,0.16);
+                box-shadow:
+                    8px 8px 18px rgba(37,99,235,0.35),
+                    -8px -8px 18px rgba(255,255,255,0.25);
             }
 
             .neo-brutal-btn-cyan {
                 background: var(--neo-cyan);
                 color: #000000;
+                border-color: rgba(0,0,0,0.16);
             }
 
             .neo-brutal-btn-red {
                 background: var(--neo-red);
                 color: #ffffff;
+                border-color: rgba(0,0,0,0.16);
             }
 
-            /* Neo-brutalist Input */
             .neo-brutal-input {
                 width: 100%;
-                background: #ffffff !important;
-                border: 3px solid var(--neo-border-color) !important;
-                border-radius: 10px !important;
+                background: #f8f8f8 !important;
+                border: 1px solid rgba(0,0,0,0.12) !important;
+                border-radius: 14px !important;
                 padding: 12px 16px !important;
                 font-size: 0.95rem !important;
                 font-weight: 600 !important;
                 color: #000000 !important;
                 outline: none !important;
-                box-shadow: 4px 4px 0px var(--neo-border-color) !important;
-                transition: all 0.15s ease !important;
+                box-shadow:
+                    8px 8px 18px rgba(0,0,0,0.10),
+                    -8px -8px 18px rgba(255,255,255,0.8) !important;
+                transition: box-shadow 0.15s ease, transform 0.15s ease;
             }
 
             .neo-brutal-input:hover {
-                transform: translate(-1px, -1px) !important;
-                box-shadow: 5px 5px 0px var(--neo-border-color) !important;
+                transform: translateY(-1px);
             }
 
             .neo-brutal-input:focus {
-                box-shadow: 6px 6px 0px var(--neo-border-color) !important;
-                transform: translate(-2px, -2px) !important;
+                box-shadow:
+                    inset 6px 6px 14px rgba(0,0,0,0.14),
+                    inset -6px -6px 14px rgba(255,255,255,0.85) !important;
             }
 
             select.neo-brutal-input {
@@ -126,30 +143,29 @@
                 font-weight: 800 !important;
             }
 
-            /* Badge */
             .neo-brutal-badge {
                 display: inline-block;
                 padding: 4px 10px;
-                background: var(--neo-cyan);
+                background: rgba(6,182,212,0.18);
                 color: #000000;
-                border: 2px solid var(--neo-border-color);
-                border-radius: 6px;
+                border: 1px solid rgba(0,0,0,0.14);
+                border-radius: 999px;
                 font-weight: 800;
                 font-size: 0.75rem;
                 text-transform: uppercase;
                 letter-spacing: 0.05em;
-                box-shadow: 2px 2px 0px var(--neo-border-color);
+                box-shadow:
+                    6px 6px 14px rgba(0,0,0,0.10),
+                    -6px -6px 14px rgba(255,255,255,0.85);
             }
 
-            /* Thick Border Rule */
             .neo-border-thick {
-                border: 3px solid var(--neo-border-color);
+                border: 1px solid var(--neo-border-color);
             }
 
-            /* Custom scrollbar matching neo-brutalist theme */
             ::-webkit-scrollbar { width: 10px; }
-            ::-webkit-scrollbar-track { background: var(--neo-bg); border-left: 3px solid var(--neo-border-color); }
-            ::-webkit-scrollbar-thumb { background: var(--neo-yellow); border: 2px solid var(--neo-border-color); border-radius: 4px; }
+            ::-webkit-scrollbar-track { background: var(--neo-bg); }
+            ::-webkit-scrollbar-thumb { background: var(--neo-yellow); border-radius: 999px; }
         </style>
     </head>
     <body class="antialiased">
